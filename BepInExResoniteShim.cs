@@ -12,21 +12,26 @@ using System.Reflection.Metadata.Ecma335;
 
 namespace BepInExResoniteShim;
 
-public abstract class BaseResonitePlugin : BasePlugin
+public class ResonitePlugin : BepInPlugin
 {
-    public abstract string Author { get; }
-    public abstract string Link { get; }
+    public ResonitePlugin(string GUID, string Name, string Version, string Author, string Link) : base(GUID, Name, Version)
+    {
+        this.Author = Author;
+        this.Link = Link;
+    }
+    public string Author { get; protected set; }
+    public string Link { get; protected set; }
 }
 
 
-[BepInPlugin(GUID, Name, Version)]
-public class BepInExResoniteShim : BaseResonitePlugin
+[ResonitePlugin(GUID, Name, Version, Author, Link)]
+public class BepInExResoniteShim : BasePlugin
 {
     public const string GUID = "me.art0007i.bepinex_resonite_shim";
     public const string Name = "BepInEx Resonite Shim";
-    public const string Version = "0.4.0";
-    public override string Author => "art0007i";
-    public override string Link => "https://github.com/art0007i/BepInExResoniteShim";
+    public const string Version = "0.6.0";
+    public const string Author = "art0007i";
+    public const string Link = "https://github.com/ResoniteModding/BepInExResoniteShim";
 
     static ManualLogSource Logger = null!;
 
