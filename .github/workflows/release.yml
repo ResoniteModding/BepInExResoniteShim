@@ -1,0 +1,64 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+    release:
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: actions/checkout@v3
+                with:
+                    fetch-depth: 0 # Need to fetch all for proper history
+            -   name: Collect build info
+                id: info
+                run: |
+                    # Get short SHA
+                    SHA_SHORT=$(git rev-parse --short HEAD)
+                    echo "sha_short=$SHA_SHORT" >> $GITHUB_OUTPUT
+                    
+                    # Extract version from csproj
+                    VERSION=$(grep -oP '(?<=<Version>)[^<]+' BepInExResoniteShim.csproj)
+                    echo "version=$VERSION" >> $GITHUB_OUTPUT
+                    echo "Version found: $VERSION"
+            -   uses: actions/setup-dotnet@v4
+                with:
+                    dotnet-version: "9.0.x"
+            -   name: Download Resonite DLLs
+                uses: hazre/DepotFileDownloader@v1
+                with:
+                    app-id: '2519830'
+                    depot-id: '2519832'
+                    files: 'Renderite.Host.dll,FrooxEngine.dll,Elements.Core.dll'
+                    username: ${{ secrets.STEAM_USERNAME }}
+                    password: ${{ secrets.STEAM_PASSWORD }}
+                    output-dir: 'Resonite'
+            -   name: Build
+                run: |
+                    ls
+                    ls Resonite
+                    dotnet build -c Release
+                    dotnet pack -c Release --no-build -o ./bin/dist
+                    # Copy the built DLL to dist folder for release
+                    cp ./bin/Release/net9.0/BepInExResoniteShim.dll ./bin/dist/
+            -   name: Publish to GitHub Packages
+                run: |
+                    dotnet nuget push ./bin/dist/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://nuget-modding.resonite.net/v3/index.json --skip-duplicate
+            -   name: Create GitHub Release
+                if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
+                uses: softprops/action-gh-release@v2
+                with:
+                    draft: true
+                    prerelease: false
+                    generate_release_notes: false
+                    name: v${{ steps.info.outputs.version }}
+                    tag_name: v${{ steps.info.outputs.version }}
+                    target_commitish: ${{ github.sha }}
+                    files: |
+                        ./bin/dist/*.nupkg
+                        ./bin/dist/*.dll
+                env:
+                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
