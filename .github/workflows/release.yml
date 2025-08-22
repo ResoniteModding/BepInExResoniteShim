@@ -32,7 +32,7 @@ jobs:
                 with:
                     username: ${{ secrets.STEAM_USERNAME }}
                     password: ${{ secrets.STEAM_PASSWORD }}
-                    dir: 'Resonite'
+                    dir: ${{ github.workspace }}/Resonite
                     os: 'windows'
                     app: 2519830
                     depot: 2519832
@@ -43,8 +43,6 @@ jobs:
                         Elements.Core.dll
             -   name: Build
                 run: |
-                    ls
-                    ls Resonite
                     # The project expects DLLs in the Resonite directory
                     dotnet build -c Release
                     dotnet pack -c Release --no-build -o ./bin/dist
