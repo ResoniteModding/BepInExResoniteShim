@@ -37,10 +37,6 @@ jobs:
                     app: 2519830
                     depot: 2519832
                     osarch: 64
-                    files: |
-                        Renderite.Host.dll
-                        FrooxEngine.dll
-                        Elements.Core.dll
             -   name: Build
                 run: |
                     # The project expects DLLs in the Resonite directory
