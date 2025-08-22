@@ -7,7 +7,7 @@
     <Product>BepInEx Resonite Shim</Product>
     <FirstAuthor>$([System.String]::Copy('$(Authors)').Split(',')[0].Trim())</FirstAuthor>
     <RepositoryUrl>https://github.com/$(FirstAuthor)/$(AssemblyName)</RepositoryUrl>
-    <PackageId>net.$(FirstAuthor).$(AssemblyName)</PackageId>
+    <PackageId>$(FirstAuthor).$(AssemblyName)</PackageId>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Deterministic>true</Deterministic>
