@@ -34,7 +34,7 @@
     </Reference>
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(GITHUB_ACTIONS)' != 'true'">
     <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(GamePath)BepInEx\plugins" />
     <Message Text="Copied $(TargetFileName) to $(GamePath)BepInEx\plugins" Importance="high" />
   </Target>
