@@ -9,6 +9,13 @@
     <GamePath Condition="Exists('C:\Program Files (x86)\Steam\steamapps\common\Resonite\')">C:\Program Files (x86)\Steam\steamapps\common\Resonite\</GamePath>
     <GamePath Condition="Exists('$(HOME)/.steam/steam/steamapps/common/Resonite/')">$(HOME)/.steam/steam/steamapps/common/Resonite/</GamePath>
     <GamePath Condition="Exists('E:\Programs\Steam\steamapps\common\Resonite')">E:\Programs\Steam\steamapps\common\Resonite\</GamePath>
+    <Deterministic>true</Deterministic>
+    <RestoreAdditionalProjectSources>
+      https://nuget.pkg.github.com/ResoniteModding/index.json;
+      https://api.nuget.org/v3/index.json;
+      https://nuget.bepinex.dev/v3/index.json;
+      https://nuget.samboy.dev/v3/index.json
+    </RestoreAdditionalProjectSources>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,18 +28,10 @@
 		<Reference Include="Elements.Core">
 			<HintPath>$(GamePath)Elements.Core.dll</HintPath>
 		</Reference>
-    <Reference Include="0Harmony">
-      <HintPath>$(GamePath)BepInEx\core\0Harmony.dll</HintPath>
-    </Reference>
-    <Reference Include="BepInEx.Core">
-      <HintPath>$(GamePath)BepInEx\core\BepInEx.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="BepInEx.NET.Common">
-      <HintPath>$(GamePath)BepInEx\core\BepInEx.NET.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="BepInEx.Preloader.Core">
-      <HintPath>$(GamePath)BepInEx\core\BepInEx.Preloader.Core.dll</HintPath>
-    </Reference>
+		<PackageReference Include="HarmonyX" Version="2.14.0" />
+		<PackageReference Include="BepInEx.Core" Version="6.0.0-be.*" />
+		<PackageReference Include="BepInEx.NET.Common" Version="6.0.0-be.*" />
+		<PackageReference Include="BepInEx.Preloader.Core" Version="6.0.0-be.*" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
