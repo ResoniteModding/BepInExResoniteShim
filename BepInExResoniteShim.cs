@@ -27,7 +27,7 @@ public class ResonitePlugin : BepInPlugin
 [ResonitePlugin(GUID, Name, Version, Author, Link)]
 public class BepInExResoniteShim : BasePlugin
 {
-    public const string GUID = "me.art0007i.bepinex_resonite_shim";
+    public const string GUID = "net.resonitemodding.bepinex_resonite_shim";
     public const string Name = "BepInEx Resonite Shim";
     public const string Version = "0.6.0";
     public const string Author = "art0007i";
