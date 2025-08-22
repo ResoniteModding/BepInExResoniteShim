@@ -11,7 +11,7 @@
     <GamePath Condition="Exists('E:\Programs\Steam\steamapps\common\Resonite')">E:\Programs\Steam\steamapps\common\Resonite\</GamePath>
     <Deterministic>true</Deterministic>
     <RestoreAdditionalProjectSources>
-      https://nuget.pkg.github.com/ResoniteModding/index.json;
+      https://nuget-modding.resonite.net/v3/index.json;
       https://api.nuget.org/v3/index.json;
       https://nuget.bepinex.dev/v3/index.json;
       https://nuget.samboy.dev/v3/index.json
