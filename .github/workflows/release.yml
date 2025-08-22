@@ -39,6 +39,7 @@ jobs:
                     osarch: 64
             -   name: Build
                 run: |
+                    ResonitePath=${{ github.workspace }}/Resonite
                     # The project expects DLLs in the Resonite directory
                     dotnet build -c Release
                     dotnet pack -c Release --no-build -o ./bin/dist
