@@ -38,6 +38,8 @@ jobs:
                     output-dir: 'Resonite'
             -   name: Build
                 run: |
+                    ls
+                    ls Resonite
                     dotnet build -c Release
                     dotnet pack -c Release --no-build -o ./bin/dist
                     # Copy the built DLL to dist folder for release
