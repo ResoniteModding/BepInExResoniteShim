@@ -24,7 +24,7 @@ public class ResonitePlugin : BepInPlugin
 }
 
 
-[ResonitePlugin(PluginInfo.GUID, PluginInfo.NAME, PluginInfo.VERSION, PluginInfo.AUTHORS, PluginInfo.REPOSITORY_URL)]
+[ResonitePlugin(PluginMetadata.GUID, PluginMetadata.NAME, PluginMetadata.VERSION, PluginMetadata.AUTHORS, PluginMetadata.REPOSITORY_URL)]
 public class BepInExResoniteShim : BasePlugin
 {
     static ManualLogSource Logger = null!;
