@@ -28,7 +28,7 @@ jobs:
                 with:
                     dotnet-version: "9.0.x"
             -   name: Download Resonite DLLs
-                uses: hazre/DepotFileDownloader@3bf2b8d8b3c642de9958066b611f71e0ab65e5f2
+                uses: hazre/DepotFileDownloader@81a8581a4b64c0f270287aed05251b016999222b
                 with:
                     app-id: '2519830'
                     depot-id: '2519832'
