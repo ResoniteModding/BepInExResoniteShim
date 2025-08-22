@@ -24,15 +24,9 @@ public class ResonitePlugin : BepInPlugin
 }
 
 
-[ResonitePlugin(GUID, Name, Version, Author, Link)]
+[ResonitePlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION, MyPluginInfo.PLUGIN_AUTHORS, MyPluginInfo.PLUGIN_REPOSITORY_URL)]
 public class BepInExResoniteShim : BasePlugin
 {
-    public const string GUID = "net.resonitemodding.bepinex_resonite_shim";
-    public const string Name = "BepInEx Resonite Shim";
-    public const string Version = "0.6.0";
-    public const string Author = "art0007i";
-    public const string Link = "https://github.com/ResoniteModding/BepInExResoniteShim";
-
     static ManualLogSource Logger = null!;
 
 
@@ -48,7 +42,7 @@ public class BepInExResoniteShim : BasePlugin
                 if (TomlTypeConverter.CanConvert(type)) continue;
                 TomlTypeConverter.AddConverter(type, new TypeConverter
                 {
-                    ConvertToString = (obj, type) => (string) typeof(Coder<>).MakeGenericType(type).GetMethod("EncodeToString")!.Invoke(null, [obj])!,
+                    ConvertToString = (obj, type) => (string)typeof(Coder<>).MakeGenericType(type).GetMethod("EncodeToString")!.Invoke(null, [obj])!,
                     ConvertToObject = (str, type) => typeof(Coder<>).MakeGenericType(type).GetMethod("DecodeFromString")!.Invoke(null, [str])!,
                 });
             }

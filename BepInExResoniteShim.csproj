@@ -3,6 +3,11 @@
   <PropertyGroup>
     <Version>0.6.0</Version>
     <TargetFramework>net9.0</TargetFramework>
+		<Authors>ResoniteModding</Authors>
+		<Product>$(AssemblyName)</Product>
+		<FirstAuthor>$([System.String]::Copy('$(Authors)').Split(',')[0].Trim())</FirstAuthor>
+		<RepositoryUrl>https://github.com/$(FirstAuthor)/$(AssemblyName)</RepositoryUrl>
+		<PackageId>$(FirstAuthor).$(Product)</PackageId>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <GamePath>$(MSBuildThisFileDirectory)Resonite</GamePath>
@@ -11,11 +16,9 @@
     <GamePath Condition="Exists('E:\Programs\Steam\steamapps\common\Resonite')">E:\Programs\Steam\steamapps\common\Resonite\</GamePath>
     <Deterministic>true</Deterministic>
     <RestoreAdditionalProjectSources>
-      https://nuget-modding.resonite.net/v3/index.json;
-      https://api.nuget.org/v3/index.json;
-      https://nuget.bepinex.dev/v3/index.json;
-      https://nuget.samboy.dev/v3/index.json
+      https://nuget-modding.resonite.net/v3/index.json
     </RestoreAdditionalProjectSources>
+    <NoWarn>$(NoWarn);NU5104</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -29,6 +32,7 @@
 			<HintPath>$(GamePath)Elements.Core.dll</HintPath>
 		</Reference>
 		<PackageReference Include="HarmonyX" Version="2.14.0" />
+    <PackageReference Include="BepInEx.PluginInfoProps" Version="2.1.0-be.*" />
 		<PackageReference Include="BepInEx.Core" Version="6.0.0-be.*" />
 		<PackageReference Include="BepInEx.NET.Common" Version="6.0.0-be.*" />
 		<PackageReference Include="BepInEx.Preloader.Core" Version="6.0.0-be.*" />
