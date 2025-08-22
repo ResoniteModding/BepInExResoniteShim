@@ -28,18 +28,24 @@ jobs:
                 with:
                     dotnet-version: "9.0.x"
             -   name: Download Resonite DLLs
-                uses: hazre/DepotFileDownloader@v1
+                uses: Skippeh/steamfetch-action@v1.0.5
                 with:
-                    app-id: '2519830'
-                    depot-id: '2519832'
-                    files: 'Renderite.Host.dll,FrooxEngine.dll,Elements.Core.dll'
                     username: ${{ secrets.STEAM_USERNAME }}
                     password: ${{ secrets.STEAM_PASSWORD }}
-                    output-dir: 'Resonite'
+                    dir: 'Resonite'
+                    os: 'windows'
+                    app: 2519830
+                    depot: 2519832
+                    osarch: 64
+                    files: |
+                        Renderite.Host.dll
+                        FrooxEngine.dll
+                        Elements.Core.dll
             -   name: Build
                 run: |
                     ls
                     ls Resonite
+                    # The project expects DLLs in the Resonite directory
                     dotnet build -c Release
                     dotnet pack -c Release --no-build -o ./bin/dist
                     # Copy the built DLL to dist folder for release
