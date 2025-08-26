@@ -5,10 +5,8 @@ using BepInEx.NET.Common;
 using Elements.Core;
 using FrooxEngine;
 using HarmonyLib;
-using Renderite.Host;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Reflection.Metadata.Ecma335;
 
 namespace BepInExResoniteShim;
 
@@ -52,16 +50,15 @@ public class BepInExResoniteShim : BasePlugin
         }
 
         Logger = Log;
-        HarmonyInstance.PatchAll();
-    }
-
-    [HarmonyPatch(typeof(GraphicalClientRunner), MethodType.StaticConstructor)]
-    public class AppPathFixer
-    {
-        public static void Postfix(ref string ___AssemblyDirectory)
+        try
         {
-            ___AssemblyDirectory = Paths.GameRootPath;
+            GraphicalClientPatches.ApplyPatch();
         }
+        catch (Exception e)
+        {
+            Logger.LogInfo("Failed to apply GraphicalClientPatches (This is normal on headless server): " + e);
+        }
+        HarmonyInstance.PatchAll();
     }
 
     [HarmonyPatch]
