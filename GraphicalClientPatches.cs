@@ -6,8 +6,16 @@ namespace BepInExResoniteShim;
 
 public static class GraphicalClientPatches
 {
-    public static void ApplyPatch()
+    public static void ApplyPatch(Harmony harmony)
     {
-        AccessTools.Field(typeof(GraphicalClientRunner), "AssemblyDirectory").SetValue(null, Paths.GameRootPath);
+        var constructor = AccessTools
+            .GetDeclaredConstructors(typeof(GraphicalClientRunner))
+            .FirstOrDefault(c => c.IsStatic);
+        harmony.Patch(constructor, postfix: new(AccessTools.Method(typeof(GraphicalClientPatches), nameof(Postfix))));
+    }
+
+    public static void Postfix(ref string ___AssemblyDirectory)
+    {
+        ___AssemblyDirectory = Paths.GameRootPath;
     }
 }

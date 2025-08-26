@@ -52,7 +52,7 @@ public class BepInExResoniteShim : BasePlugin
         Logger = Log;
         try
         {
-            GraphicalClientPatches.ApplyPatch();
+            GraphicalClientPatches.ApplyPatch(HarmonyInstance);
         }
         catch (Exception e)
         {
