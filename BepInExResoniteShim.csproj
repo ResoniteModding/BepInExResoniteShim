@@ -6,8 +6,11 @@
     <Authors>ResoniteModding</Authors>
     <Product>BepInEx Resonite Shim</Product>
     <FirstAuthor>$([System.String]::Copy('$(Authors)').Split(',')[0].Trim())</FirstAuthor>
+    <PackageProjectUrl>https://github.com/$(FirstAuthor)</PackageProjectUrl>
     <RepositoryUrl>https://github.com/$(FirstAuthor)/$(AssemblyName)</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
     <PackageId>$(FirstAuthor).$(AssemblyName)</PackageId>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Deterministic>true</Deterministic>
