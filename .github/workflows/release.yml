@@ -36,20 +36,8 @@ jobs:
             -   uses: actions/setup-dotnet@v4
                 with:
                     dotnet-version: "9.0.x"
-            -   name: Download Resonite DLLs
-                uses: Skippeh/steamfetch-action@v1.0.5
-                with:
-                    username: ${{ secrets.STEAM_USERNAME }}
-                    password: ${{ secrets.STEAM_PASSWORD }}
-                    dir: ${{ github.workspace }}/Resonite
-                    os: 'windows'
-                    app: 2519830
-                    depot: 2519832
-                    osarch: 64
             -   name: Build
                 run: |
-                    ResonitePath=${{ github.workspace }}/Resonite
-                    # The project expects DLLs in the Resonite directory
                     dotnet build -c Release
                     dotnet pack -c Release --no-build -o ./bin/dist
                     # Copy the built DLL to dist folder for release
@@ -68,7 +56,7 @@ jobs:
                         git tag -a "$TAG_NAME" -m "Release $TAG_NAME"
                         git push origin "$TAG_NAME"
                     fi
-            -   name: Publish to GitHub Packages
+            -   name: Publish to Nuget
                 run: |
                     dotnet nuget push ./bin/dist/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://nuget-modding.resonite.net/v3/index.json --skip-duplicate
             -   name: Create GitHub Release
