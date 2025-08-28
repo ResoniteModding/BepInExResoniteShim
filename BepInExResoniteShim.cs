@@ -25,7 +25,7 @@ public class ResonitePlugin : BepInPlugin
 [ResonitePlugin(PluginMetadata.GUID, PluginMetadata.NAME, PluginMetadata.VERSION, PluginMetadata.AUTHORS, PluginMetadata.REPOSITORY_URL)]
 public class BepInExResoniteShim : BasePlugin
 {
-    static ManualLogSource Logger = null!;
+    internal static ManualLogSource Logger = null!;
 
     public override void Load()
     {
@@ -43,7 +43,7 @@ public class BepInExResoniteShim : BasePlugin
                     ConvertToObject = (str, type) => typeof(Coder<>).MakeGenericType(type).GetMethod("DecodeFromString")!.Invoke(null, [str])!,
                 });
             }
-            
+
             lastAttempted = typeof(dummy);
             TomlTypeConverter.AddConverter(typeof(dummy), new TypeConverter
             {
@@ -145,6 +145,26 @@ public class BepInExResoniteShim : BasePlugin
         {
             Logger.LogDebug("Bypassing LoadFrom: " + path);
             return null;
+        }
+    }
+}
+
+public static class ResoniteHooks
+{
+    public static event Action<Engine>? OnEngineInit;
+
+    [HarmonyPatch]
+    public class EngineInitPatch
+    {
+        public static MethodBase TargetMethod()
+        {
+            return AccessTools.Method(typeof(Engine), "FinishInitialization", [typeof(LaunchOptions)]);
+        }
+
+        public static void Postfix(Engine __instance)
+        {
+            BepInExResoniteShim.Logger.LogInfo("Engine initialization finished, firing OnEngineInit event");
+            OnEngineInit?.Invoke(__instance);
         }
     }
 }
