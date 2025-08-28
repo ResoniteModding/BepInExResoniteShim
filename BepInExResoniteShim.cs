@@ -43,6 +43,13 @@ public class BepInExResoniteShim : BasePlugin
                     ConvertToObject = (str, type) => typeof(Coder<>).MakeGenericType(type).GetMethod("DecodeFromString")!.Invoke(null, [str])!,
                 });
             }
+            
+            lastAttempted = typeof(dummy);
+            TomlTypeConverter.AddConverter(typeof(dummy), new TypeConverter
+            {
+                ConvertToString = (_, _) => "dummy",
+                ConvertToObject = (_, _) => default(dummy),
+            });
         }
         catch (Exception e)
         {
