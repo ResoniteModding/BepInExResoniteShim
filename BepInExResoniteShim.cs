@@ -153,14 +153,9 @@ public static class ResoniteHooks
 {
     public static event Action<Engine>? OnEngineInit;
 
-    [HarmonyPatch]
+    [HarmonyPatch(typeof(Engine), "SetReady")]
     public class EngineInitPatch
     {
-        public static MethodBase TargetMethod()
-        {
-            return AccessTools.Method(typeof(Engine), "FinishInitialization", [typeof(LaunchOptions)]);
-        }
-
         public static void Postfix(Engine __instance)
         {
             BepInExResoniteShim.Logger.LogInfo("Engine initialization finished, firing OnEngineInit event");
