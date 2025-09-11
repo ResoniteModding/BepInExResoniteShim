@@ -43,7 +43,7 @@ public class BepInExResoniteShim : BasePlugin
                     ConvertToObject = (str, type) => typeof(Coder<>).MakeGenericType(type).GetMethod("DecodeFromString")!.Invoke(null, [str])!,
                 });
             }
-            
+
             lastAttempted = typeof(dummy);
             TomlTypeConverter.AddConverter(typeof(dummy), new TypeConverter
             {
@@ -65,7 +65,16 @@ public class BepInExResoniteShim : BasePlugin
         {
             Logger.LogInfo("Failed to apply GraphicalClientPatches (This is normal on headless server): " + e);
         }
-        HarmonyInstance.PatchAll();
+        HarmonyInstance.PatchAllUncategorized();
+
+        try
+        {
+            HarmonyInstance.PatchCategory(nameof(LogAlerter));
+        }
+        catch (Exception e)
+        {
+            Logger.LogError("Failed to patch UniLog.add_OnLog skipping.");
+        }
     }
 
     [HarmonyPatch]
