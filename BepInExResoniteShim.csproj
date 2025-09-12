@@ -49,6 +49,10 @@
       <HintPath>$(GamePath)Renderite.Host.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Renderite.Shared">
+      <HintPath>$(GamePath)Renderite.Shared.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
 
   <!-- Post-build copy to game plugins folder -->
