@@ -6,7 +6,7 @@ namespace BepInExResoniteShim;
 
 [HarmonyPatchCategory(nameof(LogAlerter))]
 [HarmonyPatch(typeof(UniLog), "add_OnLog")]
-internal class LogAlerter
+class LogAlerter
 {
     static void Postfix(Action<string> value)
     {

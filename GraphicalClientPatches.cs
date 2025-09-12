@@ -6,7 +6,7 @@ namespace BepInExResoniteShim;
 
 [HarmonyPatchCategory(nameof(GraphicalClientPatch))]
 [HarmonyPatch(typeof(GraphicalClientRunner), MethodType.StaticConstructor)]
-public class GraphicalClientPatch
+class GraphicalClientPatch
 {
     public static void Postfix(ref string ___AssemblyDirectory)
     {
