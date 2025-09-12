@@ -24,7 +24,7 @@ public class ResonitePlugin : BepInPlugin
 
 
 [ResonitePlugin(PluginMetadata.GUID, PluginMetadata.NAME, PluginMetadata.VERSION, PluginMetadata.AUTHORS, PluginMetadata.REPOSITORY_URL)]
-public class BepInExResoniteShim : BasePlugin
+class BepInExResoniteShim : BasePlugin
 {
     internal static new ManualLogSource Log = null!;
     static ConfigEntry<bool> ShowWatermark = null!;
@@ -48,7 +48,7 @@ public class BepInExResoniteShim : BasePlugin
                     ConvertToObject = (str, type) => typeof(Coder<>).MakeGenericType(type).GetMethod("DecodeFromString")!.Invoke(null, [str])!,
                 });
             }
-
+            
             lastAttempted = typeof(dummy);
             TomlTypeConverter.AddConverter(typeof(dummy), new TypeConverter
             {
@@ -66,15 +66,14 @@ public class BepInExResoniteShim : BasePlugin
 
     void RunPatches()
     {
+        HarmonyInstance.PatchAllUncategorized();//core patches. if these fail everything fails.
         HarmonyInstance.SafePatchCategory(nameof(GraphicalClientPatch));
-        HarmonyInstance.SafePatchCategory(nameof(LocationFixer));
-        HarmonyInstance.SafePatchCategory(nameof(AssemblyLoadFixer));
         HarmonyInstance.SafePatchCategory(nameof(WindowTitlePatcher));
+        HarmonyInstance.SafePatchCategory(nameof(LogAlerter));
     }
 
-    [HarmonyPatchCategory(nameof(LocationFixer))]
     [HarmonyPatch]
-    public class LocationFixer
+    class LocationFixer
     {
         public static MethodBase TargetMethod()
         {
@@ -127,9 +126,8 @@ public class BepInExResoniteShim : BasePlugin
         }
     }
 
-    [HarmonyPatchCategory(nameof(AssemblyLoadFixer))]
     [HarmonyPatch(typeof(EngineInitializer), nameof(EngineInitializer.InitializeFrooxEngine), MethodType.Async)]
-    public class AssemblyLoadFixer
+    class AssemblyLoadFixer
     {
         public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> codes)
         {
@@ -156,7 +154,7 @@ public class BepInExResoniteShim : BasePlugin
 
     [HarmonyPatchCategory(nameof(WindowTitlePatcher))]
     [HarmonyPatch(typeof(RendererInitData), "Pack")]
-    public class WindowTitlePatcher
+    class WindowTitlePatcher
     {
         private static string? GetBepisLoaderVersion()
         {
@@ -200,7 +198,7 @@ public class BepInExResoniteShim : BasePlugin
     }
 }
 
-public static class HarmonyExtensions
+static class HarmonyExtensions
 {
     public static void SafePatchCategory(this Harmony instance, string categoryName)
     {
