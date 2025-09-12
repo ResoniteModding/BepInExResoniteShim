@@ -2,6 +2,7 @@
 using HarmonyLib;
 
 namespace BepInExResoniteShim;
+using static HarmonyExtensions;
 
 
 [HarmonyPatchCategory(nameof(LogAlerter))]
@@ -10,6 +11,7 @@ class LogAlerter
 {
     static void Postfix(Action<string> value)
     {
-        value("BepInEx shim loaded");
+        if(AnyPatchFailed) value($"[BepisLoader] BepInExResoniteShim partially loaded.");
+        else value($"[BepisLoader] BepInExResoniteShim loaded successfully.");
     }
 }

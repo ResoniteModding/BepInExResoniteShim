@@ -200,6 +200,7 @@ class BepInExResoniteShim : BasePlugin
 
 static class HarmonyExtensions
 {
+    public static bool AnyPatchFailed {  get; private set; }
     public static void SafePatchCategory(this Harmony instance, string categoryName)
     {
         try
@@ -209,6 +210,7 @@ static class HarmonyExtensions
         catch (Exception e)
         {
             BepInExResoniteShim.Log.LogError($"Failed to patch {categoryName}: {e}");
+            AnyPatchFailed = true;
         }
     }
 }
