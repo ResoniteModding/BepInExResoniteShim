@@ -4,16 +4,10 @@ using Renderite.Host;
 
 namespace BepInExResoniteShim;
 
-public static class GraphicalClientPatches
+[HarmonyPatchCategory(nameof(GraphicalClientPatch))]
+[HarmonyPatch(typeof(GraphicalClientRunner), MethodType.StaticConstructor)]
+class GraphicalClientPatch
 {
-    public static void ApplyPatch(Harmony harmony)
-    {
-        var constructor = AccessTools
-            .GetDeclaredConstructors(typeof(GraphicalClientRunner))
-            .FirstOrDefault(c => c.IsStatic);
-        harmony.Patch(constructor, postfix: new(AccessTools.Method(typeof(GraphicalClientPatches), nameof(Postfix))));
-    }
-
     public static void Postfix(ref string ___AssemblyDirectory)
     {
         ___AssemblyDirectory = Paths.GameRootPath;
