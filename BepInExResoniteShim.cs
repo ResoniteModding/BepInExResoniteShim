@@ -32,7 +32,7 @@ class BepInExResoniteShim : BasePlugin
     public override void Load()
     {
         Log = base.Log;
-        ShowWatermark = Config.Bind("General", "ShowWatermark", true, "Shows 'BepisLoader' watermark in the window title and platform profile");
+        ShowWatermark = Config.Bind("General", "ShowWatermark", true, "Shows 'BepisLoader' watermark in the window title");
 
         Type? lastAttempted = null;
         try
