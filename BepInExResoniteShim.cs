@@ -2,6 +2,7 @@
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using BepInEx.NET.Common;
+using BepInEx.Preloader.Core.Patching;
 using Elements.Core;
 using FrooxEngine;
 using HarmonyLib;
@@ -13,13 +14,12 @@ namespace BepInExResoniteShim;
 
 public class ResonitePlugin : BepInPlugin
 {
-    public ResonitePlugin(string GUID, string Name, string Version, string Author, string Link) : base(GUID, Name, Version)
-    {
-        this.Author = Author;
-        this.Link = Link;
-    }
-    public string Author { get; protected set; }
-    public string Link { get; protected set; }
+    public ResonitePlugin(string GUID, string Name, string Version, string? Author = null, string? Link = null) : base(GUID, Name, Version, Author, Link) { }
+}
+
+public class ResonitePrePatcherPlugin : PatcherPluginInfoAttribute
+{
+    public ResonitePrePatcherPlugin(string GUID, string Name, string Version, string? Author = null, string? Link = null) : base(GUID, Name, Version, Author, Link) { }
 }
 
 
