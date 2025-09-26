@@ -1,81 +1,64 @@
 using BepInEx;
 using FrooxEngine;
 using HarmonyLib;
-using System.Diagnostics;
+using System.Reflection;
+using System.Reflection.Emit;
 
 namespace BepInExResoniteShim;
 
 class RelativePathFixer
 {
     [HarmonyPatchCategory(nameof(RelativePathFixer))]
-    [HarmonyPatch(typeof(LaunchOptions))]
-    class LaunchOptionsPathPatcher
+    [HarmonyPatch(typeof(Program), "<Main>$", MethodType.Async)]
+    class RenderiteHostPathFixes
     {
-        [HarmonyPostfix]
-        [HarmonyPatch(nameof(LaunchOptions.LogsDirectory), MethodType.Getter)]
-        public static void LogsDirectory_Postfix(ref string __result)
+        public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> codes)
         {
-            if (string.IsNullOrWhiteSpace(__result))
+            foreach (var code in codes)
             {
-                __result = "Logs";
-            }
-
-            if (!string.IsNullOrWhiteSpace(__result) && !Path.IsPathRooted(__result))
-            {
-                var absolutePath = Path.Combine(Paths.GameRootPath, __result);
-                BepInExResoniteShim.Log.LogDebug($"Patched LogsDirectory from '{__result}' to '{absolutePath}'");
-                __result = absolutePath;
+                if (code.Is(OpCodes.Ldstr, "Logs"))
+                {
+                    yield return new(OpCodes.Ldstr, Path.Combine(Paths.GameRootPath, "Logs"));
+                    continue;
+                }
+                if (code.Is(OpCodes.Ldstr, "Icon.png"))
+                {
+                    yield return new(OpCodes.Ldstr, Path.Combine(Paths.GameRootPath, "Icon.png"));
+                    continue;
+                }
+                if(code.operand is MethodInfo mf && mf.Name == nameof(File.WriteAllText))
+                {
+                    yield return new(OpCodes.Call, AccessTools.Method(typeof(RenderiteHostPathFixes), nameof(FileWriteInjected)));
+                    continue;
+                }
+                yield return code;
             }
         }
 
-        [HarmonyPostfix]
-        [HarmonyPatch(nameof(LaunchOptions.OverrideRendererIcon), MethodType.Getter)]
-        public static void OverrideRendererIcon_Postfix(ref string __result)
+        public static void FileWriteInjected(string path, string? contents)
         {
-            if (!string.IsNullOrWhiteSpace(__result) && !Path.IsPathRooted(__result))
+            if (!Path.IsPathRooted(path))
             {
-                var absolutePath = Path.Combine(Paths.GameRootPath, __result);
-                BepInExResoniteShim.Log.LogDebug($"Patched OverrideRendererIcon from '{__result}' to '{absolutePath}'");
-                __result = absolutePath;
+                path = Path.Combine(Paths.GameRootPath, path);
             }
+            File.WriteAllText(path, contents);
         }
     }
 
     [HarmonyPatchCategory(nameof(RelativePathFixer))]
-    [HarmonyPatch(typeof(Process), nameof(Process.Start), typeof(ProcessStartInfo))]
-    class StartRendererPatch
+    [HarmonyPatch(typeof(RenderSystem), "StartRenderer", MethodType.Async)]
+    public class RenderiteWorkingDirectoryFix
     {
-        public static void Prefix(ProcessStartInfo startInfo)
-        {
-            if (startInfo == null) return;
-
-            if (startInfo.FileName != null && startInfo.FileName.Contains("Renderite.Renderer.exe"))
+        public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> codes)
+        { 
+            foreach (var code in codes)
             {
-                if (startInfo.WorkingDirectory == "Renderer" || string.IsNullOrEmpty(startInfo.WorkingDirectory))
+                if(code.Is(OpCodes.Ldstr, "Renderer"))
                 {
-                    var originalWorkingDir = startInfo.WorkingDirectory;
-                    var correctWorkingDir = Path.GetDirectoryName(startInfo.FileName);
-                    startInfo.WorkingDirectory = correctWorkingDir;
-                    BepInExResoniteShim.Log.LogDebug($"Patched renderer WorkingDirectory from '{originalWorkingDir}' to '{correctWorkingDir}'");
+                    yield return new(OpCodes.Ldstr, Path.Combine(Paths.GameRootPath, "Renderer"));
+                    continue;
                 }
-            }
-        }
-    }
-
-    [HarmonyPatchCategory(nameof(RelativePathFixer))]
-    [HarmonyPatch(typeof(File), nameof(File.WriteAllText), typeof(string), typeof(string))]
-    class CrashLogPathFixer
-    {
-        public static void Prefix(ref string path, string contents)
-        {
-            if (path != null && path.Contains("Renderite.Host.Crash"))
-            {
-                if (!Path.IsPathRooted(path))
-                {
-                    var absolutePath = Path.Combine(Paths.GameRootPath, path);
-                    BepInExResoniteShim.Log.LogDebug($"Patched crash log path from '{path}' to '{absolutePath}'");
-                    path = absolutePath;
-                }
+                yield return code;
             }
         }
     }
