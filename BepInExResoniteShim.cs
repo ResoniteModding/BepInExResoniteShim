@@ -70,6 +70,7 @@ class BepInExResoniteShim : BasePlugin
         HarmonyInstance.SafePatchCategory(nameof(GraphicalClientPatch));
         HarmonyInstance.SafePatchCategory(nameof(WindowTitlePatcher));
         HarmonyInstance.SafePatchCategory(nameof(LogAlerter));
+        HarmonyInstance.SafePatchCategory(nameof(RelativePathFixer));
     }
 
     [HarmonyPatch]
