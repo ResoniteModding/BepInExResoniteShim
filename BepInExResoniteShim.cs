@@ -66,11 +66,20 @@ class BepInExResoniteShim : BasePlugin
 
     void RunPatches()
     {
-        HarmonyInstance.PatchAllUncategorized();//core patches. if these fail everything fails.
-        HarmonyInstance.SafePatchCategory(nameof(GraphicalClientPatch));
-        HarmonyInstance.SafePatchCategory(nameof(WindowTitlePatcher));
-        HarmonyInstance.SafePatchCategory(nameof(LogAlerter));
-        HarmonyInstance.SafePatchCategory(nameof(RelativePathFixer));
+        if (!Directory.GetCurrentDirectory().EndsWith("Headless"))
+        {
+            HarmonyInstance.PatchAllUncategorized();//core patches. if these fail everything fails.
+            HarmonyInstance.SafePatchCategory(nameof(GraphicalClientPatch));
+            HarmonyInstance.SafePatchCategory(nameof(WindowTitlePatcher));
+            HarmonyInstance.SafePatchCategory(nameof(RelativePathFixer));
+            HarmonyInstance.SafePatchCategory(nameof(LogAlerter));
+        }
+        else
+        {
+            HarmonyInstance.PatchAll(typeof(LocationFixer));
+            HarmonyInstance.PatchAll(typeof(AssemblyLoadFixer));
+            HarmonyInstance.PatchAll(typeof(LogAlerter));
+        }
     }
 
     [HarmonyPatch]
