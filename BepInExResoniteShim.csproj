@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <Version>0.9.1</Version>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <Authors>ResoniteModding</Authors>
     <Product>BepInEx Resonite Shim</Product>
     <FirstAuthor>$([System.String]::Copy('$(Authors)').Split(',')[0].Trim())</FirstAuthor>
