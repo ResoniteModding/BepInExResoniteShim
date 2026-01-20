@@ -50,7 +50,7 @@ class BepInExResoniteShim : BasePlugin
                     ConvertToObject = (str, type) => typeof(Coder<>).MakeGenericType(type).GetMethod("DecodeFromString")!.Invoke(null, [str])!,
                 });
             }
-            
+
             lastAttempted = typeof(dummy);
             TomlTypeConverter.AddConverter(typeof(dummy), new TypeConverter
             {
@@ -68,19 +68,17 @@ class BepInExResoniteShim : BasePlugin
 
     void RunPatches()
     {
-        if (IsHeadless)
+        // explicit types to avoid assembly scanning which crashes headless
+        HarmonyInstance.PatchAll(typeof(LocationFixer));
+        HarmonyInstance.PatchAll(typeof(AssemblyLoadFixer));
+        HarmonyInstance.PatchAll(typeof(LogAlerter));
+
+        // Graphical-only patches
+        if (!IsHeadless)
         {
-            HarmonyInstance.PatchAll(typeof(LocationFixer));
-            HarmonyInstance.PatchAll(typeof(AssemblyLoadFixer));
-            HarmonyInstance.PatchAll(typeof(LogAlerter));
-        }
-        else
-        {
-            HarmonyInstance.PatchAllUncategorized();//core patches. if these fail everything fails.
             HarmonyInstance.SafePatchCategory(nameof(GraphicalClientPatch));
             HarmonyInstance.SafePatchCategory(nameof(WindowTitlePatcher));
             HarmonyInstance.SafePatchCategory(nameof(RelativePathFixer));
-            HarmonyInstance.SafePatchCategory(nameof(LogAlerter));
         }
     }
 
@@ -212,7 +210,7 @@ class BepInExResoniteShim : BasePlugin
 
 static class HarmonyExtensions
 {
-    public static bool AnyPatchFailed {  get; private set; }
+    public static bool AnyPatchFailed { get; private set; }
     public static void SafePatchCategory(this Harmony instance, string categoryName)
     {
         try
