@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Version>0.9.2</Version>
+    <Version>0.9.3</Version>
     <TargetFramework>net10.0</TargetFramework>
     <Authors>ResoniteModding</Authors>
     <Product>BepInEx Resonite Shim</Product>
@@ -30,7 +30,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All"/>
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.102" PrivateAssets="all" />
 		<PackageReference Include="BepInEx.NET.CoreCLR" Version="6.0.0-be.*" IncludeAssets="compile" />
 		<PackageReference Include="BepInEx.ResonitePluginInfoProps" Version="3.*" />
 		<PackageReference Include="Krafs.Publicizer" Version="2.3.0">
