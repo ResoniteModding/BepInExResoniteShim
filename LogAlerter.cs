@@ -18,7 +18,8 @@ class LogAlerter
         {
             if (BepInExResoniteShim.IsHeadless && _logStreamField != null)
             {
-                while (_logStreamField.GetValue(null) is null)
+                var timeout = DateTime.UtcNow.AddSeconds(10);
+                while (_logStreamField.GetValue(null) is null && DateTime.UtcNow < timeout)
                     await Task.Delay(1);
             }
 
