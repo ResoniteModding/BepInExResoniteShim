@@ -28,7 +28,7 @@ class BepInExResoniteShim : BasePlugin
 {
     internal static new ManualLogSource Log = null!;
     static ConfigEntry<bool> ShowWatermark = null!;
-    internal static readonly Type? HeadlessType = AccessTools.TypeByName("FrooxEngine.Headless.Program");
+    internal static readonly Type? HeadlessType = Type.GetType("FrooxEngine.Headless.Program, Resonite");
     public static bool IsHeadless => HeadlessType != null;
 
     public override void Load()
