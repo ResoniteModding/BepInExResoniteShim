@@ -4,7 +4,6 @@ using Renderite.Host;
 
 namespace BepInExResoniteShim;
 
-[HarmonyPatchCategory(nameof(GraphicalClientPatch))]
 [HarmonyPatch(typeof(GraphicalClientRunner), MethodType.StaticConstructor)]
 class GraphicalClientPatch
 {

@@ -90,16 +90,29 @@ class BepInExResoniteShim : BasePlugin
             Log.LogError($"Failed to register generic type converters (Last attempted = {lastAttempted?.ToString() ?? "NULL"}): " + e);
         }
 
-        RunPatches();
+        RunPatches(HarmonyInstance);
     }
 
-    void RunPatches()
+    internal static bool AnyPatchFailed { get; private set; }
+
+    /// <summary>
+    /// Apply all patches, incompatible patches are skipped gracefully.
+    /// </summary>
+    static void RunPatches(Harmony harmony)
     {
-        HarmonyInstance.PatchAllUncategorized();//core patches. if these fail everything fails.
-        HarmonyInstance.SafePatchCategory(nameof(GraphicalClientPatch));
-        HarmonyInstance.SafePatchCategory(nameof(WindowTitlePatcher));
-        HarmonyInstance.SafePatchCategory(nameof(LogAlerter));
-        HarmonyInstance.SafePatchCategory(nameof(RelativePathFixer));
+        var assembly = Assembly.GetExecutingAssembly();
+        foreach (var type in AccessTools.GetTypesFromAssembly(assembly))
+        {
+            try
+            {
+                harmony.CreateClassProcessor(type).Patch();
+            }
+            catch (Exception e)
+            {
+                Log.LogDebug($"Skipped patching {type.Name}: {e.Message}");
+                AnyPatchFailed = true;
+            }
+        }
     }
 
     [HarmonyPatch]
@@ -182,7 +195,6 @@ class BepInExResoniteShim : BasePlugin
         }
     }
 
-    [HarmonyPatchCategory(nameof(WindowTitlePatcher))]
     [HarmonyPatch(typeof(RendererInitData), "Pack")]
     class WindowTitlePatcher
     {
@@ -200,23 +212,6 @@ class BepInExResoniteShim : BasePlugin
                 __instance.windowTitle = newTitle;
                 Log.LogInfo($"Successfully patched window title to: {newTitle}");
             }
-        }
-    }
-}
-
-static class HarmonyExtensions
-{
-    public static bool AnyPatchFailed { get; private set; }
-    public static void SafePatchCategory(this Harmony instance, string categoryName)
-    {
-        try
-        {
-            instance.PatchCategory(categoryName);
-        }
-        catch (Exception e)
-        {
-            BepInExResoniteShim.Log.LogError($"Failed to patch {categoryName}: {e}");
-            AnyPatchFailed = true;
         }
     }
 }
