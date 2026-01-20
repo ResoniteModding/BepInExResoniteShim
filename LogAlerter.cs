@@ -10,13 +10,13 @@ using static HarmonyExtensions;
 [HarmonyPatch(typeof(UniLog), "add_OnLog")]
 class LogAlerter
 {
-    static Type _headlessType = AccessTools.TypeByName("FrooxEngine.Headless.Program");
-    static FieldInfo _logStreamField = AccessTools.Field(_headlessType, "logStream");
+    static readonly FieldInfo? _logStreamField = AccessTools.Field(BepInExResoniteShim.HeadlessType, "logStream");
+
     static void Postfix(Action<string> value)
     {
         Task.Run(async () =>
         {
-            if (_headlessType is not null)
+            if (BepInExResoniteShim.IsHeadless && _logStreamField != null)
             {
                 while (_logStreamField.GetValue(null) is null)
                     await Task.Delay(1);

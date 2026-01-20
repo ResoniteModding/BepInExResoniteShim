@@ -28,6 +28,8 @@ class BepInExResoniteShim : BasePlugin
 {
     internal static new ManualLogSource Log = null!;
     static ConfigEntry<bool> ShowWatermark = null!;
+    internal static readonly Type? HeadlessType = AccessTools.TypeByName("FrooxEngine.Headless.Program");
+    public static bool IsHeadless => HeadlessType != null;
 
     public override void Load()
     {
@@ -66,19 +68,19 @@ class BepInExResoniteShim : BasePlugin
 
     void RunPatches()
     {
-        if (!Directory.GetCurrentDirectory().EndsWith("Headless"))
+        if (IsHeadless)
+        {
+            HarmonyInstance.PatchAll(typeof(LocationFixer));
+            HarmonyInstance.PatchAll(typeof(AssemblyLoadFixer));
+            HarmonyInstance.PatchAll(typeof(LogAlerter));
+        }
+        else
         {
             HarmonyInstance.PatchAllUncategorized();//core patches. if these fail everything fails.
             HarmonyInstance.SafePatchCategory(nameof(GraphicalClientPatch));
             HarmonyInstance.SafePatchCategory(nameof(WindowTitlePatcher));
             HarmonyInstance.SafePatchCategory(nameof(RelativePathFixer));
             HarmonyInstance.SafePatchCategory(nameof(LogAlerter));
-        }
-        else
-        {
-            HarmonyInstance.PatchAll(typeof(LocationFixer));
-            HarmonyInstance.PatchAll(typeof(AssemblyLoadFixer));
-            HarmonyInstance.PatchAll(typeof(LogAlerter));
         }
     }
 
