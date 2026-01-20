@@ -28,8 +28,6 @@ class BepInExResoniteShim : BasePlugin
 {
     internal static new ManualLogSource Log = null!;
     static ConfigEntry<bool> ShowWatermark = null!;
-    internal static readonly Type? HeadlessType = Type.GetType("FrooxEngine.Headless.Program, Resonite");
-    public static bool IsHeadless => HeadlessType != null;
 
     public override void Load()
     {
@@ -63,23 +61,8 @@ class BepInExResoniteShim : BasePlugin
             Log.LogError($"Failed to register generic type converters (Last attempted = {lastAttempted?.ToString() ?? "NULL"}): " + e);
         }
 
-        RunPatches();
-    }
-
-    void RunPatches()
-    {
-        // explicit types to avoid assembly scanning which crashes headless
-        HarmonyInstance.PatchAll(typeof(LocationFixer));
-        HarmonyInstance.PatchAll(typeof(AssemblyLoadFixer));
-        HarmonyInstance.PatchAll(typeof(LogAlerter));
-
-        // Graphical-only patches
-        if (!IsHeadless)
-        {
-            HarmonyInstance.SafePatchCategory(nameof(GraphicalClientPatch));
-            HarmonyInstance.SafePatchCategory(nameof(WindowTitlePatcher));
-            HarmonyInstance.SafePatchCategory(nameof(RelativePathFixer));
-        }
+        // Apply all patches, incompatible patches are skipped gracefully
+        HarmonyInstance.SafePatchAll();
     }
 
     [HarmonyPatch]
@@ -162,7 +145,6 @@ class BepInExResoniteShim : BasePlugin
         }
     }
 
-    [HarmonyPatchCategory(nameof(WindowTitlePatcher))]
     [HarmonyPatch(typeof(RendererInitData), "Pack")]
     class WindowTitlePatcher
     {
@@ -211,16 +193,21 @@ class BepInExResoniteShim : BasePlugin
 static class HarmonyExtensions
 {
     public static bool AnyPatchFailed { get; private set; }
-    public static void SafePatchCategory(this Harmony instance, string categoryName)
+
+    public static void SafePatchAll(this Harmony instance, Assembly? assembly = null)
     {
-        try
+        assembly ??= Assembly.GetCallingAssembly();
+        foreach (var type in AccessTools.GetTypesFromAssembly(assembly))
         {
-            instance.PatchCategory(categoryName);
-        }
-        catch (Exception e)
-        {
-            BepInExResoniteShim.Log.LogError($"Failed to patch {categoryName}: {e}");
-            AnyPatchFailed = true;
+            try
+            {
+                instance.CreateClassProcessor(type).Patch();
+            }
+            catch (Exception e)
+            {
+                BepInExResoniteShim.Log.LogDebug($"Skipped patching {type.Name}: {e.Message}");
+                AnyPatchFailed = true;
+            }
         }
     }
 }

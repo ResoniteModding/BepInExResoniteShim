@@ -8,7 +8,6 @@ namespace BepInExResoniteShim;
 
 class RelativePathFixer
 {
-    [HarmonyPatchCategory(nameof(RelativePathFixer))]
     [HarmonyPatch(typeof(Program), "<Main>$", MethodType.Async)]
     class RenderiteHostPathFixes
     {
@@ -45,7 +44,6 @@ class RelativePathFixer
         }
     }
 
-    [HarmonyPatchCategory(nameof(RelativePathFixer))]
     [HarmonyPatch(typeof(RenderSystem), "StartRenderer", MethodType.Async)]
     public class RenderiteWorkingDirectoryFix
     {
