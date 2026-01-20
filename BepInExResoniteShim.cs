@@ -90,8 +90,29 @@ class BepInExResoniteShim : BasePlugin
             Log.LogError($"Failed to register generic type converters (Last attempted = {lastAttempted?.ToString() ?? "NULL"}): " + e);
         }
 
-        // Apply all patches, incompatible patches are skipped gracefully
-        HarmonyInstance.SafePatchAll();
+        RunPatches(HarmonyInstance);
+    }
+
+    internal static bool AnyPatchFailed { get; private set; }
+
+    /// <summary>
+    /// Apply all patches, incompatible patches are skipped gracefully.
+    /// </summary>
+    static void RunPatches(Harmony harmony)
+    {
+        var assembly = Assembly.GetExecutingAssembly();
+        foreach (var type in AccessTools.GetTypesFromAssembly(assembly))
+        {
+            try
+            {
+                harmony.CreateClassProcessor(type).Patch();
+            }
+            catch (Exception e)
+            {
+                Log.LogDebug($"Skipped patching {type.Name}: {e.Message}");
+                AnyPatchFailed = true;
+            }
+        }
     }
 
     [HarmonyPatch]
@@ -190,28 +211,6 @@ class BepInExResoniteShim : BasePlugin
                 var newTitle = $"Resonite - BepisLoader {version ?? ""}";
                 __instance.windowTitle = newTitle;
                 Log.LogInfo($"Successfully patched window title to: {newTitle}");
-            }
-        }
-    }
-}
-
-static class HarmonyExtensions
-{
-    public static bool AnyPatchFailed { get; private set; }
-
-    public static void SafePatchAll(this Harmony instance, Assembly? assembly = null)
-    {
-        assembly ??= Assembly.GetCallingAssembly();
-        foreach (var type in AccessTools.GetTypesFromAssembly(assembly))
-        {
-            try
-            {
-                instance.CreateClassProcessor(type).Patch();
-            }
-            catch (Exception e)
-            {
-                BepInExResoniteShim.Log.LogDebug($"Skipped patching {type.Name}: {e.Message}");
-                AnyPatchFailed = true;
             }
         }
     }

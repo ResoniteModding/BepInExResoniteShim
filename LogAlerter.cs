@@ -4,9 +4,6 @@ using HarmonyLib;
 
 namespace BepInExResoniteShim;
 
-using static HarmonyExtensions;
-
-
 [HarmonyPatch(typeof(UniLog), "add_OnLog")]
 class LogAlerter
 {
@@ -24,7 +21,7 @@ class LogAlerter
                     await Task.Delay(1);
             }
 
-            if (AnyPatchFailed) value($"[BepisLoader] BepInExResoniteShim partially loaded.");
+            if (BepInExResoniteShim.AnyPatchFailed) value($"[BepisLoader] BepInExResoniteShim partially loaded.");
             else value($"[BepisLoader] BepInExResoniteShim loaded successfully.");
         });
     }
