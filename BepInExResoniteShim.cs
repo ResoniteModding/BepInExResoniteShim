@@ -29,9 +29,38 @@ class BepInExResoniteShim : BasePlugin
     internal static new ManualLogSource Log = null!;
     static ConfigEntry<bool> ShowWatermark = null!;
 
+    internal static string? GetBepisLoaderVersion()
+    {
+        try
+        {
+            var bepisLoaderAssembly = AppDomain.CurrentDomain.GetAssemblies()
+                .FirstOrDefault(a => a.GetName().Name == "BepisLoader");
+
+            if (bepisLoaderAssembly != null)
+            {
+                var version = bepisLoaderAssembly.GetName().Version;
+                if (version != null)
+                {
+                    return $"v{version.Major}.{version.Minor}.{version.Build}";
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Log.LogWarning($"Failed to get BepisLoader version: {e.Message}");
+        }
+
+        return null;
+    }
+
     public override void Load()
     {
         Log = base.Log;
+
+        var bepisLoaderVersion = GetBepisLoaderVersion();
+        Log.LogInfo(bepisLoaderVersion != null
+            ? $"Loader: BepisLoader {bepisLoaderVersion}"
+            : "Loader: BepisLoader not found, version unknown");
         ShowWatermark = Config.Bind("General", "ShowWatermark", true, "Shows 'BepisLoader' watermark in the window title");
 
         Type? lastAttempted = null;
@@ -48,7 +77,7 @@ class BepInExResoniteShim : BasePlugin
                     ConvertToObject = (str, type) => typeof(Coder<>).MakeGenericType(type).GetMethod("DecodeFromString")!.Invoke(null, [str])!,
                 });
             }
-            
+
             lastAttempted = typeof(dummy);
             TomlTypeConverter.AddConverter(typeof(dummy), new TypeConverter
             {
@@ -157,30 +186,6 @@ class BepInExResoniteShim : BasePlugin
     [HarmonyPatch(typeof(RendererInitData), "Pack")]
     class WindowTitlePatcher
     {
-        private static string? GetBepisLoaderVersion()
-        {
-            try
-            {
-                var bepisLoaderAssembly = AppDomain.CurrentDomain.GetAssemblies()
-                    .FirstOrDefault(a => a.GetName().Name == "BepisLoader");
-
-                if (bepisLoaderAssembly != null)
-                {
-                    var version = bepisLoaderAssembly.GetName().Version;
-                    if (version != null)
-                    {
-                        return $" v{version.Major}.{version.Minor}.{version.Build}";
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Log.LogWarning($"Failed to get BepisLoader version: {e.Message}");
-            }
-
-            return null;
-        }
-
         public static void Prefix(RendererInitData __instance)
         {
             if (!ShowWatermark.Value)
@@ -191,7 +196,7 @@ class BepInExResoniteShim : BasePlugin
             if (__instance.windowTitle == "Resonite")
             {
                 var version = GetBepisLoaderVersion();
-                var newTitle = $"Resonite - BepisLoader{version ?? ""}";
+                var newTitle = $"Resonite - BepisLoader {version ?? ""}";
                 __instance.windowTitle = newTitle;
                 Log.LogInfo($"Successfully patched window title to: {newTitle}");
             }
@@ -201,7 +206,7 @@ class BepInExResoniteShim : BasePlugin
 
 static class HarmonyExtensions
 {
-    public static bool AnyPatchFailed {  get; private set; }
+    public static bool AnyPatchFailed { get; private set; }
     public static void SafePatchCategory(this Harmony instance, string categoryName)
     {
         try
