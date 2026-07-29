@@ -25,7 +25,7 @@ class RelativePathFixer
                     yield return new(OpCodes.Ldstr, Path.Combine(Paths.GameRootPath, "Icon.png"));
                     continue;
                 }
-                if(code.operand is MethodInfo mf && mf.Name == nameof(File.WriteAllText))
+                if (code.operand is MethodInfo mf && mf.Name == nameof(File.WriteAllText))
                 {
                     yield return new(OpCodes.Call, AccessTools.Method(typeof(RenderiteHostPathFixes), nameof(FileWriteInjected)));
                     continue;
@@ -48,10 +48,10 @@ class RelativePathFixer
     public class RenderiteWorkingDirectoryFix
     {
         public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> codes)
-        { 
+        {
             foreach (var code in codes)
             {
-                if(code.Is(OpCodes.Ldstr, "Renderer"))
+                if (code.Is(OpCodes.Ldstr, "Renderer"))
                 {
                     yield return new(OpCodes.Ldstr, Path.Combine(Paths.GameRootPath, "Renderer"));
                     continue;
