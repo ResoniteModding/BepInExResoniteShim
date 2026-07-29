@@ -5,7 +5,6 @@ using BepInEx.NET.Common;
 using Elements.Core;
 using FrooxEngine;
 using HarmonyLib;
-using Renderite.Shared;
 using System.Reflection;
 using System.Reflection.Emit;
 
@@ -195,23 +194,17 @@ class BepInExResoniteShim : BasePlugin
         }
     }
 
-    [HarmonyPatch(typeof(RendererInitData), "Pack")]
+    [HarmonyPatch(typeof(RenderSystem), nameof(RenderSystem.Initialize))]
     class WindowTitlePatcher
     {
-        public static void Prefix(RendererInitData __instance)
+        public static void Prefix(ref string? windowTitle)
         {
             if (!ShowWatermark.Value)
-            {
                 return;
-            }
 
-            if (__instance.windowTitle == "Resonite")
-            {
-                var version = GetBepisLoaderVersion();
-                var newTitle = $"Resonite - BepisLoader {version ?? ""}";
-                __instance.windowTitle = newTitle;
-                Log.LogInfo($"Successfully patched window title to: {newTitle}");
-            }
+            var version = GetBepisLoaderVersion();
+            windowTitle = $"Resonite - BepisLoader {version ?? ""}";
+            Log.LogInfo($"Successfully patched window title to: {windowTitle}");
         }
     }
 }
