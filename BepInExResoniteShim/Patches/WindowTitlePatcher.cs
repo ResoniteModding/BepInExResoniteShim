@@ -7,13 +7,13 @@ namespace BepInExResoniteShim;
 [HarmonyPatch(typeof(RenderSystem), nameof(RenderSystem.Initialize))]
 class WindowTitlePatcher
 {
-    public static void Prefix(ref string? windowTitle)
+    public static void Prefix(Engine engine, ref string? windowTitle)
     {
         if (!BepInExResoniteShim.ShowWatermark.Value)
             return;
 
         var version = BepInExResoniteShim.GetBepisLoaderVersion();
-        windowTitle = $"Resonite - BepisLoader {version ?? ""}";
+        windowTitle = $"{engine.PlatformProfile.Name} - BepisLoader {version ?? ""}";
         BepInExResoniteShim.Log.LogInfo($"Successfully patched window title to: {windowTitle}");
     }
 }

@@ -59,6 +59,10 @@
 			<HintPath>$(GamePath)Renderite.Host.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
+		<Reference Include="SkyFrost.Base.Models">
+			<HintPath>$(GamePath)SkyFrost.Base.Models.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
     <Reference Include="Renderite.Shared">
       <HintPath>$(GamePath)Renderite.Shared.dll</HintPath>
       <Private>False</Private>
