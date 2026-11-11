@@ -20,7 +20,7 @@ Plugin for [BepisLoader](https://github.com/ResoniteModding/BepisLoader) which a
 
 ## Development
 
-Requires the .NET 10 SDK (see `global.json`).
+Requires the .NET 11 SDK (see `global.json`).
 
 ```sh
 # build + Thunderstore package into ./build

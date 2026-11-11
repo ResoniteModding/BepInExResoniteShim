@@ -44,7 +44,7 @@ class RelativePathFixer
         }
     }
 
-    [HarmonyPatch(typeof(RenderSystem), "StartRenderer", MethodType.Async)]
+    [HarmonyPatch(typeof(RenderSystem), "StartRenderer")]
     public class RenderiteWorkingDirectoryFix
     {
         public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> codes)
