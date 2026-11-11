@@ -6,7 +6,7 @@ using System.Reflection.Emit;
 
 namespace BepInExResoniteShim;
 
-[HarmonyPatch(typeof(EngineInitializer), nameof(EngineInitializer.InitializeFrooxEngine), MethodType.Async)]
+[HarmonyPatch(typeof(EngineInitializer), nameof(EngineInitializer.InitializeFrooxEngine))]
 class AssemblyLoadFixer
 {
     public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> codes)
