@@ -364,3 +364,12 @@ FodyWeavers.xsd
 
 # Thunderstore CLI builds
 /build
+
+# NuGet pack output
+dist/
+
+# Local build overrides (see Config.Build.user.props.template)
+Config.Build.user.props
+
+# dotenv files
+.env
